@@ -93,7 +93,7 @@ public class Main extends Application {
         }else{
             gc.setFill(Paint.valueOf("black"));
             gc.fillText("Game Over", xSize/2-50, ySize/2-15);
-            game.stop();
+            game.interrupt();
         }
     }
 
@@ -129,29 +129,30 @@ public class Main extends Application {
             public void run() {
                 while (Balls.size()!=0) {
 
-                    if (isBallsStandStill()) {
-                        if (!cue.visible)selectBall();
-                        else selectStrengthAngle();
+                    if (!Thread.interrupted()) {
 
-                    }
-                    else {
-                        while ((!isBallsStandStill()&&(Balls.size()!=0))) {
-                            for (Ball ball : Balls) {
-                                ball.move();
-                                checkCollision(ball);
-                            }
-                            draw();
-                            if (BallsOut.size()!=0) removeBalls();
+                        if (isBallsStandStill()) {
+                            if (!cue.visible) selectBall();
+                            else selectStrengthAngle();
 
-                            try {
-                                Thread.sleep(delay);
-                            } catch (InterruptedException e) {
-                                e.printStackTrace();
+                        } else {
+                            while ((!isBallsStandStill() && (Balls.size() != 0))) {
+                                for (Ball ball : Balls) {
+                                    ball.move();
+                                    checkCollision(ball);
+                                }
+                                draw();
+                                if (BallsOut.size() != 0) removeBalls();
+
+                                try {
+                                    Thread.sleep(delay);
+                                } catch (InterruptedException e) {
+                                    e.printStackTrace();
+                                }
                             }
                         }
                     }
-
-
+                else return;
                 }
             }
         });
